@@ -1,5 +1,6 @@
 import requests
 import urllib2
+import re
 
 def generate_website_link(id):
     return "https://www.amazon.com/dp/%s" % id
@@ -18,12 +19,14 @@ def get_data(id):
     return requests.get(generate_data_link(id), headers = headers)
 
 
+star_regex = re.compile("(\d+\.\d) out of 5 stars")
+
 class AmazonBook:
     def download_website(self):
         self.website = get_website(self.id)
 
     def download_data(self):
-        self.data = get_data(self.id)
+        self.data = get_data(self.id).json()
 
     def website_downloaded(self):
         return bool(self.website)
@@ -53,8 +56,13 @@ class AmazonBook:
                 if (text[i] == '"'):
                     return urllib2.unquote(text[index + len(findf) + 1 : i])
 
+    def get_stars(self):
+        if self.data_downloaded():
+            json = self.data
+            return star_regex.findall(json["reviewStarsImageTag"])[0]
+
 
 if __name__ == "__main__":
     book = AmazonBook(1847176968)
-    print book.get_desc()
+    print book.get_stars()
 
