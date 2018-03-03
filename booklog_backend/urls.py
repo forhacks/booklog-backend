@@ -16,8 +16,8 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-# Serializers define the API representation.
 from django.contrib.auth.models import User
+from booklog import models
 from rest_framework import serializers, viewsets, routers
 
 
@@ -27,20 +27,25 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'username', 'email', 'is_staff')
 
 
-# ViewSets define the view behavior.
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
-# Routers provide an easy way of automatically determining the URL conf.
+class BookSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Book
+        fields = ('title', 'author', 'description', 'image', 'amazon_id', 'category')
+
+
+class BookViewSet(viewsets.ModelViewSet):
+    queryset = models.Book.objects.all()
+    serializer_class = BookSerializer
+
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
+router.register(r'books', BookViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
