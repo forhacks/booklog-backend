@@ -35,7 +35,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class BookSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Book
-        fields = ('title', 'author', 'description', 'image', 'amazon_id', 'category')
+        fields = ('title', 'author', 'description', 'image_url', 'small_image_url')
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -54,22 +54,10 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
 
 
-class CategorySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.Category
-        fields = ('title', 'amazon_id')
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = models.Category.objects.all()
-    serializer_class = CategorySerializer
-
-
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet)
 router.register(r'book', BookViewSet)
 router.register(r'author', AuthorViewSet)
-router.register(r'category', CategoryViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
