@@ -2,6 +2,7 @@ import re, pickle
 
 tags_regex = re.compile('(<.*?>)')
 escape_regex = re.compile('([^a-zA-Z\.\, ]*)')
+id_regex = re.compile('\d+|$')
 
 def harvest(k):
     j = k.split(',')
@@ -16,11 +17,13 @@ def harvest(k):
         "isbn13" : j[-3],
         "first_published" : j[-4],
         "no_of_pages" : j[-5],
-        "book_type" : j[-6]
+        "book_type" : j[-6],
+        "id" : re.findall(id_regex, j[-1])[0]
     }
 
 
 props = file("goodreads_list_props.csv").read().splitlines()
+
 output = []
 
 for i, p in enumerate(props):
@@ -29,8 +32,9 @@ for i, p in enumerate(props):
     genre = h["genre"]
     desc = h["description"]
     rating = h["rating"]
+    id = h["id"]
 
-    output.append((genre, desc, rating))
+    output.append((genre, desc, rating, id))
 with open("data.pkl", "w") as f:
     pickle.dump(output, f)
 
